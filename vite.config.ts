@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite'
-import vue from '@vue/plugin-vue' // Pastikan plugin ini yang di-import
+import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue()],
-  base: '/coderoast/', // Tambahkan baris ini!
+  plugins: [react()],
 })
