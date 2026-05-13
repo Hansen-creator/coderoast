@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useCart } from "../context/CartContext";
 
-// Definisi Tipe Data
+// 1. Definisi Tipe Data yang lebih ketat
 interface CoffeeProduct {
   id: number;
   name: string;
@@ -35,14 +35,14 @@ export default function Products() {
     });
   }, [searchTerm, activeCategory]);
 
+  // 2. Gunakan tipe data dari cart daripada 'any'
   const getQty = (name: string) => {
-    const item = cart.find((i: any) => i.name === name);
+    const item = cart.find((i) => i.name === name);
     return item ? item.qty : 0;
   };
 
   return (
     <div className="products-container py-5">
-      {/* SECTION HEADER */}
       <div className="container">
         <div className="row justify-content-center mb-5">
           <div className="col-lg-7 text-center">
@@ -134,7 +134,7 @@ export default function Products() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .fw-black { font-weight: 900; }
         .fs-7 { font-size: 0.8rem; }
         .tracking-widest { letter-spacing: 0.2em; }
