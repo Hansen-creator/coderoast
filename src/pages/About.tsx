@@ -1,4 +1,5 @@
-import React from "react";
+// 1. Hapus 'React' karena tidak digunakan langsung (Vite mendukung JSX tanpa import React)
+// Jika masih error di terminal, pastikan tsconfig.json memiliki "jsx": "react-jsx"
 
 export default function About() {
   const milestones = [
@@ -68,7 +69,7 @@ export default function About() {
           <div className="timeline-line d-none d-md-block"></div>
 
           {milestones.map((item, index) => (
-            <div key={index} className={`row mb-5 g-0 timeline-row ${index % 2 === 0 ? "" : "flex-md-row-reverse"}`}>
+            <div key={`${item.year}-${index}`} className={`row mb-5 g-0 timeline-row ${index % 2 === 0 ? "" : "flex-md-row-reverse"}`}>
               <div className="col-md-6 p-3">
                 <div className="milestone-card p-4 animate-scroll">
                   <div className="d-flex justify-content-between align-items-center mb-3">
@@ -100,7 +101,8 @@ export default function About() {
         </div>
       </section>
 
-      <style jsx>{`
+      {/* 2. Style tetap menggunakan <style> standar (tanpa jsx) agar tidak error di Vite */}
+      <style>{`
         .fw-black { font-weight: 900; }
         .tracking-widest { letter-spacing: 0.4em; }
         .tracking-wider { letter-spacing: 0.15em; }
@@ -128,7 +130,6 @@ export default function About() {
           background: rgba(255, 193, 7, 0.03);
         }
 
-        /* Timeline */
         .timeline-line {
           position: absolute;
           left: 50%;
@@ -141,11 +142,12 @@ export default function About() {
         .milestone-card {
           background: #0f172a;
           border: 1px solid rgba(255, 255, 255, 0.05);
-          transition: border-color 0.3s ease;
+          transition: border-color 0.3s ease, transform 0.3s ease;
         }
 
         .milestone-card:hover {
           border-color: #ffc107;
+          transform: translateY(-5px);
         }
 
         .milestone-year {
@@ -162,7 +164,6 @@ export default function About() {
           letter-spacing: 1px;
         }
 
-        /* Quote Box */
         .quote-box {
           background: radial-gradient(circle at center, rgba(255, 193, 7, 0.05) 0%, transparent 70%);
           border-top: 1px solid rgba(255, 193, 7, 0.2);
@@ -181,10 +182,14 @@ export default function About() {
           letter-spacing: 1px;
         }
 
-        /* Animations */
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         .animate-up { animation: fadeInUp 0.8s ease-out forwards; }
@@ -196,6 +201,7 @@ export default function About() {
           .border-end-custom { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
           .display-3 { font-size: 2.5rem; }
           .milestone-card { text-align: center; }
+          .timeline-line { display: none; }
         }
       `}</style>
     </div>
