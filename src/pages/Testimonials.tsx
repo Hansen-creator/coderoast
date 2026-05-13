@@ -1,5 +1,3 @@
-import React from "react";
-
 interface Testimonial {
   id: number;
   name: string;
@@ -135,7 +133,7 @@ export default function Testimonials() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .fw-black { font-weight: 900; }
         .tracking-widest { letter-spacing: 0.3em; }
         .tracking-wider { letter-spacing: 0.15em; }
