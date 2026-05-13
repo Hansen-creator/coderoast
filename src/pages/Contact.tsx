@@ -176,7 +176,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .fw-black { font-weight: 900; }
         .tracking-widest { letter-spacing: 0.3em; }
         .tracking-wider { letter-spacing: 0.1em; }
