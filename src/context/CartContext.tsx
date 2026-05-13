@@ -1,41 +1,50 @@
 import { createContext, useContext, useState } from "react";
+import type { ReactNode } from "react";
 import Swal from "sweetalert2";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 
-type Item = {
+// 1. Definisi tipe yang lebih ketat
+interface Item {
   name: string;
   price: number;
   image: string;
   qty: number;
-};
+}
 
-type CartContextType = {
+// Tipe untuk parameter produk saat addToCart
+interface Product {
+  name: string;
+  price: number;
+  image: string;
+}
+
+interface CartContextType {
   cart: Item[];
-  addToCart: (product: any) => void;
+  addToCart: (product: Product) => void;
   increaseQty: (name: string) => void;
   decreaseQty: (name: string) => void;
   totalItems: number;
   totalPrice: number;
-  checkout: (navigate: any) => void;
-};
+  checkout: (navigate: (path: string) => void) => void;
+}
 
 const CartContext = createContext<CartContextType | null>(null);
 const MAX_QTY = 5;
 
-export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<Item[]>([]);
 
   const totalPrice = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
   const totalItems = cart.reduce((a, b) => a + b.qty, 0);
 
-  const addToCart = (product: any) => {
+  const addToCart = (product: Product) => {
     const exist = cart.find((item) => item.name === product.name);
     if (exist) {
       if (exist.qty >= MAX_QTY) {
         Swal.fire({ 
           icon: "warning", 
           title: "Limit Reached", 
+          text: `Maksimal pembelian adalah ${MAX_QTY} item`,
           background: "#0f172a", 
           color: "#fff",
           confirmButtonColor: "#ffc107"
@@ -47,15 +56,28 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       setCart([...cart, { ...product, qty: 1 }]);
     }
     
-    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+    const Toast = Swal.mixin({ 
+      toast: true, 
+      position: 'top-end', 
+      showConfirmButton: false, 
+      timer: 1500,
+      background: "#1e293b",
+      color: "#fff"
+    });
     Toast.fire({ icon: 'success', title: `${product.name} ditambahkan` });
   };
 
   const increaseQty = (name: string) => {
-    setCart(cart.map((item) => {
+    setCart(prevCart => prevCart.map((item) => {
       if (item.name === name) {
         if (item.qty >= MAX_QTY) {
-          Swal.fire({ icon: "warning", title: "Limit Tercapai", background: "#0f172a", color: "#fff", confirmButtonColor: "#ffc107" });
+          Swal.fire({ 
+            icon: "warning", 
+            title: "Limit Tercapai", 
+            background: "#0f172a", 
+            color: "#fff", 
+            confirmButtonColor: "#ffc107" 
+          });
           return item;
         }
         return { ...item, qty: item.qty + 1 };
@@ -65,19 +87,24 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const decreaseQty = (name: string) => {
-    setCart(cart.map((item) => item.name === name ? { ...item, qty: item.qty - 1 } : item).filter((item) => item.qty > 0));
+    setCart(prevCart => 
+      prevCart
+        .map((item) => item.name === name ? { ...item, qty: item.qty - 1 } : item)
+        .filter((item) => item.qty > 0)
+    );
   };
 
   const generatePDF = (seatNumber: number, orderId: string) => {
+    // Ukuran 80mm x 150mm untuk thermal printer
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "mm",
-      format: [80, 150] // Ukuran struk thermal (80mm) agar lebih nyata
+      format: [80, 150]
     });
 
     const pageWidth = doc.internal.pageSize.getWidth();
     
-    // --- HEADER ---
+    // HEADER
     doc.setFont("courier", "bold");
     doc.setFontSize(14);
     doc.text("CODEROAST", pageWidth / 2, 10, { align: "center" });
@@ -87,7 +114,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     doc.text("Jakarta, Indonesia", pageWidth / 2, 15, { align: "center" });
     doc.text("--------------------------------", pageWidth / 2, 20, { align: "center" });
 
-    // --- INFO TRANSAKSI ---
+    // INFO TRANSAKSI
     doc.setFontSize(7);
     doc.text(`ID    : ${orderId}`, 10, 25);
     doc.text(`TGL   : ${new Date().toLocaleDateString('id-ID')}`, 10, 29);
@@ -97,7 +124,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     doc.setFont("courier", "normal");
     doc.text("--------------------------------", pageWidth / 2, 42, { align: "center" });
 
-    // --- DAFTAR ITEM ---
+    // DAFTAR ITEM
     let currentY = 47;
     cart.forEach((item) => {
       doc.text(`${item.name.toUpperCase()}`, 10, currentY);
@@ -107,7 +134,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       currentY += 10;
     });
 
-    // --- FOOTER / TOTAL ---
+    // FOOTER / TOTAL
     doc.text("--------------------------------", pageWidth / 2, currentY, { align: "center" });
     doc.setFontSize(9);
     doc.setFont("courier", "bold");
@@ -123,7 +150,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     doc.save(`Struk_${orderId}.pdf`);
   };
 
-  const checkout = async (navigate: any) => {
+  const checkout = async (navigate: (path: string) => void) => {
     if (cart.length === 0) return;
 
     const result = await Swal.fire({
