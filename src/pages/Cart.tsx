@@ -114,7 +114,7 @@ export default function Cart() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .fw-black { font-weight: 900; }
         .tracking-wider { letter-spacing: 0.15em; }
         .tracking-widest { letter-spacing: 0.25em; }
