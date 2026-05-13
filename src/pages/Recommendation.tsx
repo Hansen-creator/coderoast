@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Swal from "sweetalert2";
 
-// 1. Struktur Data yang Konsisten
+// 1. Struktur Data
 interface CoffeeRecommendation {
   name: string;
   intensity: string;
@@ -12,11 +12,11 @@ interface CoffeeRecommendation {
 }
 
 export default function Recommendation() {
-  const [selectedVibe, setSelectedVibe] = useState("");
-  const [selectedGoal, setSelectedGoal] = useState("");
+  const [selectedVibe, setSelectedVibe] = useState<string>("");
+  const [selectedGoal, setSelectedGoal] = useState<string>("");
   const [result, setResult] = useState<CoffeeRecommendation | null>(null);
 
-  // 2. Mapping Table: Input A + Input B = Hasil yang Selalu Sama
+  // 2. Database Rekomendasi
   const coffeeDatabase: Record<string, CoffeeRecommendation> = {
     "Pagi-Produktif": {
       name: "Double Shot Espresso",
@@ -98,7 +98,6 @@ export default function Recommendation() {
           <div className="card border-0 shadow-lg p-4 p-md-5" 
                style={{ backgroundColor: "rgba(30, 41, 59, 0.6)", backdropFilter: "blur(20px)", borderRadius: "30px" }}>
             
-            {/* STEP 1: WAKTU */}
             <div className="mb-4">
               <label className="text-warning small fw-bold mb-3 d-block">1. KAPAN KAMU AKAN MEMINUMNYA?</label>
               <div className="d-flex flex-wrap gap-2">
@@ -114,7 +113,6 @@ export default function Recommendation() {
               </div>
             </div>
 
-            {/* STEP 2: TUJUAN */}
             <div className="mb-5">
               <label className="text-warning small fw-bold mb-3 d-block">2. APA RENCANAMU SEKARANG?</label>
               <div className="d-flex flex-wrap gap-2">
@@ -137,9 +135,8 @@ export default function Recommendation() {
               CARI KOPI SAYA →
             </button>
 
-            {/* HASIL REKOMENDASI */}
             {result && (
-              <div className="mt-4 p-4 rounded-4 animate-fade-in shadow-inner" 
+              <div className="mt-4 p-4 rounded-4 shadow-inner" 
                    style={{ backgroundColor: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,193,7,0.3)" }}>
                 <div className="row align-items-center">
                   <div className="col-md-4 text-center mb-3 mb-md-0">
